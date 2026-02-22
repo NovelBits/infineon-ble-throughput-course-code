@@ -9,8 +9,11 @@
 #include "cyhal.h"
 #include "cy_retarget_io.h"
 #include "wiced_bt_stack.h"
+#include "wiced_bt_dev.h"
+#include "wiced_memory.h"
 #include "cycfg_bt_settings.h"
 #include "cybsp_bt_config.h"
+#include "cybt_platform_trace.h"
 #include "throughput_central.h"
 #include <FreeRTOS.h>
 #include <task.h>
@@ -60,11 +63,17 @@ int main(void)
     printf("==============================================\r\n");
     printf("\r\n");
 
+    /* Enable BT stack trace for debugging */
+    cybt_platform_set_trace_level(CYBT_TRACE_ID_STACK, CYBT_TRACE_ID_MAX);
+
     /* Configure the Bluetooth platform */
     cybt_platform_config_init(&cybsp_bt_platform_cfg);
 
     /* Initialize Bluetooth stack */
     wiced_bt_stack_init(app_bt_management_callback, &wiced_bt_cfg_settings);
+
+    /* Create a buffer heap, make it the default heap */
+    wiced_bt_create_heap("app", NULL, 0x1000, NULL, WICED_TRUE);
 
 #ifdef USE_OLED_DISP
     /* Initialize OLED display */

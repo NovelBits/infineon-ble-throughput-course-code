@@ -314,17 +314,24 @@ cy_rslt_t oled_init(void)
  */
 void oled_clear_screen(void)
 {
-    memset(txBuff,0, PACKET_SIZE + 1);
-    txBuff[0] = 0x40;
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
-    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR,txBuff, PACKET_SIZE, 0, true);
+    /* Reset column and page addressing to cover the full screen */
+    mtb_ssd1306_write_command_byte(SSD1309_COLUMNADDR);
+    mtb_ssd1306_write_command_byte(0x00);
+    mtb_ssd1306_write_command_byte(SSD1309_LCDWIDTH - 1);
+    mtb_ssd1306_write_command_byte(SSD1309_PAGEADDR);
+    mtb_ssd1306_write_command_byte(0x00);
+    mtb_ssd1306_write_command_byte(0x07);
 
+    memset(txBuff, 0, PACKET_SIZE + 1);
+    txBuff[0] = 0x40;
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
+    cyhal_i2c_master_write(&i2c_obj, I2C_SLAVE_ADDR, txBuff, PACKET_SIZE, 0, true);
 }
 
 /*

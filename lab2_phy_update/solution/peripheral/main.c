@@ -13,11 +13,14 @@
  ******************************************************************************/
 #include "throughput_server.h"
 #include "wiced_bt_stack.h"
+#include "wiced_bt_dev.h"
+#include "wiced_memory.h"
 #include "cy_retarget_io.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include "cycfg_bt_settings.h"
 #include "cybsp_bt_config.h"
+#include "cybt_platform_trace.h"
 
 /*******************************************************************************
  *        Macros
@@ -57,10 +60,14 @@ int main()
                         CYBSP_DEBUG_UART_RX,
                         CY_RETARGET_IO_BAUDRATE);
 
-    printf("\n");
-    printf("==============================================\n");
-    printf("  BLE Throughput: Peripheral\n");
-    printf("==============================================\n\n");
+    printf("\r\n");
+    printf("==============================================\r\n");
+    printf("  Bluetooth LE Throughput: Peripheral\r\n");
+    printf("==============================================\r\n");
+    printf("\r\n");
+
+    /* Enable BT stack trace for debugging */
+    cybt_platform_set_trace_level(CYBT_TRACE_ID_STACK, CYBT_TRACE_ID_MAX);
 
     /* Initialize Bluetooth porting layer with HCI configuration */
     cybt_platform_config_init(&cybsp_bt_platform_cfg);
@@ -70,13 +77,16 @@ int main()
                                 &wiced_bt_cfg_settings);
     if (WICED_BT_SUCCESS == result)
     {
-        printf("Bluetooth Stack Initialization Successful\n");
+        printf("Bluetooth Stack Initialization Successful\r\n");
     }
     else
     {
-        printf("Bluetooth Stack Initialization failed!!\n");
+        printf("Bluetooth Stack Initialization failed!!\r\n");
         CY_ASSERT(0);
     }
+
+    /* Create a buffer heap, make it the default heap */
+    wiced_bt_create_heap("app", NULL, 0x1000, NULL, WICED_TRUE);
 
     /* Create a task to calculate throughput */
     rtos_result = xTaskCreate(get_throughput_task, THROUGHPUT_TASK_STRING,
