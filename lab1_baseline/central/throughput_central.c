@@ -765,6 +765,24 @@ static void app_request_phy_update(void)
 }
 
 /*******************************************************************************
+ * Function Name: phy_to_string
+ *
+ * Summary:
+ *   Returns a short string for the given PHY value (for UART status output).
+ ******************************************************************************/
+static const char* phy_to_string(uint8_t phy)
+{
+    switch (phy)
+    {
+    case 1: return "1M";
+    case 2: return "2M";
+    case 3: return "S2";
+    case 4: return "S8";
+    default: return "--";
+    }
+}
+
+/*******************************************************************************
  * Function Name: app_throughput_timer_callb
  *
  * Summary:
@@ -808,7 +826,13 @@ void throughput_calc_task(void *pvParam)
 
             if (kbps > 0)
             {
-                printf("Throughput: %lu kbps\r\n", (unsigned long)kbps);
+                printf("Throughput: %lu kbps | PHY: %s | CI: %.2fms | MTU: %d | DLE: %d | RSSI: %d dBm\r\n",
+                       (unsigned long)kbps,
+                       phy_to_string(conn_state.tx_phy),
+                       conn_state.conn_interval,
+                       conn_state.mtu,
+                       conn_state.dle_tx_bytes,
+                       conn_state.rssi);
             }
 
             /* Read current RSSI */
