@@ -104,12 +104,12 @@ void oled_display_next_page(void)
 /*******************************************************************************
  * Page 1: Main Throughput View
  *
- * Layout (128x64, 8 lines of 5x8 text, lines 2-3 use 12x16 large text):
+ * Layout (128x64, 8 lines of 5x8 text, lines 1-2 use 12x16 large text):
  *   Line 0: "BLE THROUGHPUT COURSE"
- *   Line 1: "---------------------"
- *   Lines 2-3: Large throughput number (e.g. "1234")
- *   Line 4: "kbps"
- *   Line 5: "PHY: 2M    CI: 30ms"
+ *   Lines 1-2: Large throughput number (e.g. "1234")
+ *   Line 3: "kbps" (inline after large number)
+ *   Line 4: "PHY: 2M    CI: 30ms"
+ *   Line 5: (blank - spacing)
  *   Line 6: "MTU: 247   DLE: 251"
  *   Line 7: "RSSI: -42 dBm"
  ******************************************************************************/
@@ -120,7 +120,6 @@ static void draw_page_throughput(void)
     oled_clear_screen();
 
     oled_printText(0, 0, "BLE THROUGHPUT COURSE");
-    oled_printText(1, 0, "---------------------");
 
     /* Large throughput number + small "kbps" on same line, centered together */
     snprintf(buf, sizeof(buf), "%lu", (unsigned long)last_throughput_kbps);
@@ -129,15 +128,17 @@ static void draw_page_throughput(void)
     uint8_t total_width = num_len * 13 + 2 + 4 * 6;
     uint8_t x_pos = (128 - total_width) / 2;
     if (x_pos > 127) x_pos = 0;
-    oled_printLargeText(2, x_pos, buf);
-    /* "kbps" in small text on line 3 (bottom half of large text), after the number */
-    oled_printText(3, x_pos + num_len * 13 + 2, "kbps");
+    oled_printLargeText(1, x_pos, buf);
+    /* "kbps" in small text on line 2 (bottom half of large text), after the number */
+    oled_printText(2, x_pos + num_len * 13 + 2, "kbps");
 
-    /* Line 5: PHY and Connection Interval */
+    /* Line 4: PHY and Connection Interval */
     snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.0fms",
              phy_to_string(conn_state.tx_phy),
              conn_state.conn_interval);
-    oled_printText(5, 0, buf);
+    oled_printText(4, 0, buf);
+
+    /* Line 5: blank (spacing) */
 
     /* Line 6: MTU and DLE */
     snprintf(buf, sizeof(buf), "MTU:%-4d DLE:%-3d",
