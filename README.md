@@ -8,7 +8,7 @@ Each lab folder contains complete ModusToolbox projects that you can import dire
 
 - 2x Infineon CYW920829M2EVK-02 Evaluation Kits
 - 1x CY8CKIT-028-SENSE IoT Sense Expansion Shield (optional, for OLED display)
-- USB-C cables for both boards
+- micro-USB cables for both boards
 
 ## Getting Started
 
@@ -29,21 +29,21 @@ git clone https://github.com/NovelBits/infineon-ble-throughput-course-code.git
 
 1. Select the project in the Project Explorer
 2. Click **Build** (hammer icon)
-3. Connect the target board via USB-C
+3. Connect the target board via micro-USB
 4. Click **Program** (green play icon with chip)
 
 ## Lab Map
 
 | Lab | Folder | Description | What You Do |
 |-----|--------|-------------|-------------|
-| **Lab 1** | `lab1_baseline/` | Environment setup and baseline measurement | Import, build, flash, verify connection. All feature gates OFF. |
-| **Lab 2** | `lab2_phy_update/` | PHY configuration — switch to 2M PHY | **Starter:** Enable PHY gate and select 2M PHY in `app_config.h` (2 TODOs per board). **Solution:** Working 2M PHY configuration. |
+| **Lab 1** | `lab1_baseline/` | Environment setup and baseline measurement | Import, build, flash, verify connection. All feature flags OFF. |
+| **Lab 2** | `lab2_phy_update/` | PHY configuration — switch to 2M PHY | **Starter:** Enable PHY flag and select 2M PHY in `app_config.h` (2 TODOs per board). **Solution:** Working 2M PHY configuration. |
 
 ## Lab Structure
 
 ### lab1_baseline/
 
-No starter/solution split — this is the unmodified baseline. Both projects build and run with all feature gates disabled (1M PHY, 27-byte DLE, default MTU).
+No starter/solution split — this is the unmodified baseline. Both projects build and run with all feature flags disabled (1M PHY, 27-byte DLE, default MTU).
 
 ```
 lab1_baseline/
@@ -53,7 +53,7 @@ lab1_baseline/
 
 ### lab2_phy_update/
 
-Students enable the PHY update feature gate and select the 2M PHY in `app_config.h`. Configuration changes only — no code modifications needed.
+Students enable the PHY update feature flag and select the 2M PHY in `app_config.h`. Configuration changes only — no code modifications needed.
 
 ```
 lab2_phy_update/
@@ -69,7 +69,7 @@ lab2_phy_update/
 
 The student-facing configuration is centralized in `app_config.h` in each project. This file contains:
 
-- **Feature gates** — enable/disable protocol features (`APP_ENABLE_PHY_UPDATE`, etc.)
+- **Feature flags** — enable/disable protocol features (`APP_ENABLE_PHY_UPDATE`, etc.)
 - **PHY selection** — choose between 1M and 2M PHY
 - **Link layer parameters** — connection interval, DLE
 - **GATT parameters** — MTU size
@@ -79,7 +79,3 @@ The student-facing configuration is centralized in `app_config.h` in each projec
 - [ModusToolbox 3.x](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/)
 - GCC ARM toolchain (included with ModusToolbox)
 
-## Course Content
-
-The full course modules and lab guides are in the main course repository:
-[infineon-ble-throughput-course](https://github.com/NovelBits/infineon-ble-throughput-course)
