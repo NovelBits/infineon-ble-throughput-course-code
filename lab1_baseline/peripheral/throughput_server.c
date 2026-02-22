@@ -638,6 +638,10 @@ static wiced_bt_gatt_status_t ble_app_connect_callback(
             memcpy(conn_state_info.remote_addr, p_conn_status->bd_addr,
                                                         BD_ADDR_LEN);
 
+            /* Set default packet size based on default MTU (23) */
+            conn_state_info.mtu = 23;
+            packet_size = tput_get_notification_packet_size(conn_state_info.mtu);
+
             /* Update the adv/conn state */
             app_bt_adv_conn_state = APP_BT_ADV_OFF_CONN_ON;
 

@@ -77,6 +77,7 @@ static void app_request_phy_update(void);
 static void app_handle_discovery_result(wiced_bt_gatt_event_data_t *p_event_data);
 static void app_handle_operation_complete(wiced_bt_gatt_event_data_t *p_event_data);
 static void app_handle_discovery_complete(wiced_bt_gatt_event_data_t *p_event_data);
+static void app_rssi_result_cback(wiced_bt_dev_rssi_result_t *p_rssi);
 
 /*******************************************************************************
  * Function Name: app_bt_management_callback
@@ -318,6 +319,10 @@ static wiced_bt_gatt_status_t app_gatt_event_handler(wiced_bt_gatt_evt_t event,
                    BD_ADDR_LEN);
             conn_state.connected = WICED_TRUE;
             conn_state.mtu = 23; /* Default MTU before exchange */
+            conn_state.tx_phy = 1; /* All connections start on 1M PHY */
+            conn_state.rx_phy = 1;
+            conn_state.dle_tx_bytes = 27; /* Default LE Data Length */
+            conn_state.conn_interval = 50.0; /* Default: max configured CI (40 * 1.25 ms) */
 
             printf("Connected! conn_id=%d, peer: ", conn_state.conn_id);
             print_bd_address(conn_state.remote_addr);
@@ -809,12 +814,26 @@ void throughput_calc_task(void *pvParam)
             /* Read current RSSI */
             wiced_bt_dev_read_rssi(conn_state.remote_addr,
                                     BT_TRANSPORT_LE,
-                                    (wiced_bt_dev_cmpl_cback_t *)NULL);
+                                    (wiced_bt_dev_cmpl_cback_t *)app_rssi_result_cback);
 
 #ifdef USE_OLED_DISP
             oled_display_set_throughput(kbps);
             oled_display_update();
 #endif
         }
+    }
+}
+
+/*******************************************************************************
+ * Function Name: app_rssi_result_cback
+ *
+ * Summary:
+ *   Callback for RSSI read operation. Stores the RSSI value in conn_state.
+ ******************************************************************************/
+static void app_rssi_result_cback(wiced_bt_dev_rssi_result_t *p_rssi)
+{
+    if (p_rssi->status == WICED_BT_SUCCESS)
+    {
+        conn_state.rssi = p_rssi->rssi;
     }
 }

@@ -20,7 +20,7 @@ SEARCH_cmsis=../../mtb_shared/cmsis/release-v5.8.2
 SEARCH_core-lib=../../mtb_shared/core-lib/release-v1.6.0
 SEARCH_core-make=../../mtb_shared/core-make/release-v3.8.0
 SEARCH_freertos=../../mtb_shared/freertos/release-v10.6.202
-SEARCH_fw-cyw20829b1=../../mtb_shared/fw-cyw20829b1/release-v1.0.0
+SEARCH_fw-cyw20829b0=../../mtb_shared/fw-cyw20829b0/release-v1.0.0
 SEARCH_mtb-hal-cat1=../../mtb_shared/mtb-hal-cat1/release-v2.7.4
 SEARCH_mtb-pdl-cat1=../../mtb_shared/mtb-pdl-cat1/release-v3.19.0
 SEARCH_recipe-make-cat1b=../../mtb_shared/recipe-make-cat1b/release-v2.8.2
@@ -36,7 +36,7 @@ SEARCH_MTB_MK+=$(SEARCH_cmsis)
 SEARCH_MTB_MK+=$(SEARCH_core-lib)
 SEARCH_MTB_MK+=$(SEARCH_core-make)
 SEARCH_MTB_MK+=$(SEARCH_freertos)
-SEARCH_MTB_MK+=$(SEARCH_fw-cyw20829b1)
+SEARCH_MTB_MK+=$(SEARCH_fw-cyw20829b0)
 SEARCH_MTB_MK+=$(SEARCH_mtb-hal-cat1)
 SEARCH_MTB_MK+=$(SEARCH_mtb-pdl-cat1)
 SEARCH_MTB_MK+=$(SEARCH_recipe-make-cat1b)
@@ -52,13 +52,13 @@ COMPONENTS += MW_CMSIS
 COMPONENTS += MW_CORE_LIB
 COMPONENTS += MW_CORE_MAKE
 COMPONENTS += MW_FREERTOS
-COMPONENTS += MW_FW_CYW20829B1
+COMPONENTS += MW_FW_CYW20829B0
 COMPONENTS += MW_MTB_HAL_CAT1
 COMPONENTS += MW_MTB_PDL_CAT1
 COMPONENTS += MW_RECIPE_MAKE_CAT1B
 
 # Register map file
-DEVICE_CYW20829B1010_SVD=$(SEARCH_mtb-pdl-cat1)/devices/COMPONENT_CAT1B/svd/cyw20829.svd
+DEVICE_CYW20829B0LKML_SVD=$(SEARCH_mtb-pdl-cat1)/devices/COMPONENT_CAT1B/svd/cyw20829.svd
 
 
 #

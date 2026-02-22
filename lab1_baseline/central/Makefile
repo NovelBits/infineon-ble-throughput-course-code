@@ -85,7 +85,7 @@ DEFINES+=USE_S8_DEFAULT
 endif
 
 #Enable/Disable OLED display
-USE_OLED_DISP?=0
+USE_OLED_DISP?=1
 ifeq ($(USE_OLED_DISP),1)
 DEFINES+=USE_OLED_DISP
 endif

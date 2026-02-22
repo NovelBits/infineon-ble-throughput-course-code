@@ -122,15 +122,16 @@ static void draw_page_throughput(void)
     oled_printText(0, 0, "BLE THROUGHPUT COURSE");
     oled_printText(1, 0, "---------------------");
 
-    /* Large throughput number (lines 2-3) */
+    /* Large throughput number + small "kbps" on same line, centered together */
     snprintf(buf, sizeof(buf), "%lu", (unsigned long)last_throughput_kbps);
-    /* Center the large text: each large char is 13px wide */
-    uint8_t text_len = strlen(buf);
-    uint8_t x_pos = (128 - text_len * 13) / 2;
+    uint8_t num_len = strlen(buf);
+    /* Total width: large digits + 2px gap + small "kbps" (4 chars * 6px) */
+    uint8_t total_width = num_len * 13 + 2 + 4 * 6;
+    uint8_t x_pos = (128 - total_width) / 2;
     if (x_pos > 127) x_pos = 0;
     oled_printLargeText(2, x_pos, buf);
-
-    oled_printText(4, 52, "kbps");
+    /* "kbps" in small text on line 3 (bottom half of large text), after the number */
+    oled_printText(3, x_pos + num_len * 13 + 2, "kbps");
 
     /* Line 5: PHY and Connection Interval */
     snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.0fms",
