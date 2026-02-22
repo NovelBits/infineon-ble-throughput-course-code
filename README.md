@@ -20,10 +20,10 @@ git clone https://github.com/NovelBits/infineon-ble-throughput-course-code.git
 
 ### 2. Import a lab into ModusToolbox
 
-1. Open **ModusToolbox Eclipse IDE**
-2. Go to **File > Import > ModusToolbox > ModusToolbox Application Import**
+1. Open **Eclipse IDE for ModusToolbox**
+2. Click **Import Existing Application In-Place** from the Quick Panel
 3. Browse to the lab folder you want to work on (e.g., `lab1_baseline/central/`)
-4. The IDE will resolve BSP and library dependencies automatically
+4. The IDE will run `make getlibs` to fetch the BSP and library dependencies (requires internet)
 
 ### 3. Build and flash
 
