@@ -129,7 +129,8 @@ VFP_SELECT=
 #
 # NOTE: Includes and defines should use the INCLUDES and DEFINES variable
 # above.
-CFLAGS=
+# Workaround: display-oled-ssd1306 v1.0.0 missing #include <string.h> (GCC 14+ error)
+CFLAGS=-Wno-error=implicit-function-declaration
 
 # Additional / custom C++ compiler flags.
 #
