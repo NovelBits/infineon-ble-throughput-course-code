@@ -1,6 +1,7 @@
 # IDE and Build
 .vscode/
 .idea/
+.settings/
 *.o
 *.elf
 *.hex
@@ -24,7 +25,11 @@ Thumbs.db
 .mtbqueryapi
 .ninja_log
 GeneratedSource/
-bsps/
+assetlocks.json
+.project
+.cproject
+.clangd
+.mtbLaunchConfigs/
 
 # Claude Code (local only)
 CLAUDE.md
