@@ -11,6 +11,7 @@
 #include "app_bt_utils.h"
 #include "app_config.h"
 #include "cyhal.h"
+#include "cybsp.h"
 #include "wiced_bt_l2c.h"
 #include "wiced_bt_gatt.h"
 #include "wiced_bt_ble.h"
@@ -80,6 +81,50 @@ static void app_handle_discovery_complete(wiced_bt_gatt_event_data_t *p_event_da
 static void app_rssi_result_cback(wiced_bt_dev_rssi_result_t *p_rssi);
 
 /*******************************************************************************
+ * RGB LED Throughput Indicator
+ *
+ * Colors indicate throughput level:
+ *   Red   = below 200 kbps (baseline, unoptimized)
+ *   Green = 200-700 kbps (partial optimization)
+ *   Blue  = above 700 kbps (fully optimized)
+ ******************************************************************************/
+#define LED_THRESH_LOW   200
+#define LED_THRESH_HIGH  700
+
+static void app_led_init(void)
+{
+    cyhal_gpio_init(CYBSP_LED_RGB_RED, CYHAL_GPIO_DIR_OUTPUT,
+                    CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
+    cyhal_gpio_init(CYBSP_LED_RGB_GREEN, CYHAL_GPIO_DIR_OUTPUT,
+                    CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
+    cyhal_gpio_init(CYBSP_LED_RGB_BLUE, CYHAL_GPIO_DIR_OUTPUT,
+                    CYHAL_GPIO_DRIVE_STRONG, CYBSP_LED_STATE_OFF);
+}
+
+static void app_led_set_throughput(uint32_t kbps)
+{
+    /* Turn off all LEDs */
+    cyhal_gpio_write(CYBSP_LED_RGB_RED, CYBSP_LED_STATE_OFF);
+    cyhal_gpio_write(CYBSP_LED_RGB_GREEN, CYBSP_LED_STATE_OFF);
+    cyhal_gpio_write(CYBSP_LED_RGB_BLUE, CYBSP_LED_STATE_OFF);
+
+    if (kbps == 0) return;
+
+    if (kbps < LED_THRESH_LOW)
+    {
+        cyhal_gpio_write(CYBSP_LED_RGB_RED, CYBSP_LED_STATE_ON);
+    }
+    else if (kbps < LED_THRESH_HIGH)
+    {
+        cyhal_gpio_write(CYBSP_LED_RGB_GREEN, CYBSP_LED_STATE_ON);
+    }
+    else
+    {
+        cyhal_gpio_write(CYBSP_LED_RGB_BLUE, CYBSP_LED_STATE_ON);
+    }
+}
+
+/*******************************************************************************
  * Function Name: app_bt_management_callback
  *
  * Summary:
@@ -113,6 +158,9 @@ wiced_bt_dev_status_t app_bt_management_callback(wiced_bt_management_evt_t event
 
             /* Initialize throughput measurement */
             throughput_measure_init();
+
+            /* Initialize RGB LED for throughput indication */
+            app_led_init();
 
             /* Initialize 1-second throughput timer (10kHz, period 9999 = 1s) */
             cy_rslt_t rslt;
@@ -376,6 +424,9 @@ static wiced_bt_gatt_status_t app_gatt_event_handler(wiced_bt_gatt_evt_t event,
 
             /* Stop throughput timer */
             cyhal_timer_stop(&throughput_timer_obj);
+
+            /* Turn off RGB LED */
+            app_led_set_throughput(0);
 
             /* Reset throughput measurement */
             throughput_measure_init();
@@ -835,6 +886,9 @@ void throughput_calc_task(void *pvParam)
                        conn_state.rssi);
             }
 
+            /* Update RGB LED based on throughput level */
+            app_led_set_throughput(kbps);
+
             /* Read current RSSI */
             wiced_bt_dev_read_rssi(conn_state.remote_addr,
                                     BT_TRANSPORT_LE,
@@ -852,7 +906,7 @@ void throughput_calc_task(void *pvParam)
  * Function Name: app_rssi_result_cback
  *
  * Summary:
- *   Callback for RSSI read result. Stores RSSI value in conn_state.
+ *   Callback for RSSI read operation. Stores the RSSI value in conn_state.
  ******************************************************************************/
 static void app_rssi_result_cback(wiced_bt_dev_rssi_result_t *p_rssi)
 {

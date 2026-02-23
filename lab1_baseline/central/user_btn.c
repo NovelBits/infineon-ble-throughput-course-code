@@ -39,20 +39,16 @@
 #include "cycfg_pins.h"
 #include "cyhal_gpio.h"
 
-#include "wiced_bt_types.h"
-#include "wiced_timer.h"
-
 /* Stack size for BTN task */
 #define BTN_TASK_STACK_SIZE (512u)
 
 #define GPIO_INTERRUPT_PRIORITY (4u)
 
-#define USER_BUTTON_TIMER_INTERVAL_MS 200
+/* Minimum time between button presses (milliseconds) */
+#define BTN_DEBOUNCE_MS 300
 
 /* Handle of the btn task */
 static TaskHandle_t btn_handle;
-static wiced_timer_t btn_ms_timer;
-static uint32_t ms_timer_count = 0;
 static gpio_interrupt_handler_t g_gpio_interrupt_handler_ptr = NULL;
 
 static void gpio_interrupt_handler(void *callback_arg, cyhal_gpio_event_t event);
@@ -62,21 +58,18 @@ static cyhal_gpio_callback_data_t cb_data = {.callback = gpio_interrupt_handler,
 static void gpio_interrupt_handler(void *handler_arg, cyhal_gpio_event_t event)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    static uint32_t previous_btn_pressed_timer = 0;
-    static uint32_t current_btn_pressed_timer = 0;
+    static TickType_t previous_press_tick = 0;
 
     if (event != CYHAL_GPIO_IRQ_FALL) return;
 
-    xHigherPriorityTaskWoken = pdFALSE;
+    TickType_t current_tick = xTaskGetTickCountFromISR();
 
-    current_btn_pressed_timer = ms_timer_count;
-
-    /* Debounce logic to prevent spurious callbacks. Ensures atleast 600ms between button presses*/
-    if ((current_btn_pressed_timer - previous_btn_pressed_timer) > (600 / USER_BUTTON_TIMER_INTERVAL_MS)) {
-        previous_btn_pressed_timer = current_btn_pressed_timer;
+    /* Debounce: require at least BTN_DEBOUNCE_MS between presses */
+    if ((current_tick - previous_press_tick) > pdMS_TO_TICKS(BTN_DEBOUNCE_MS))
+    {
+        previous_press_tick = current_tick;
 
         vTaskNotifyGiveIndexedFromISR(btn_handle, 0, &xHigherPriorityTaskWoken);
-
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
@@ -92,11 +85,6 @@ void user_btn_thread(void *arg)
     }
 }
 
-void btn_timeout_handler(void *finecount)
-{
-    ms_timer_count++;
-}
-
 void configure_user_btn(gpio_interrupt_handler_t gpio_interrupt_handler)
 {
     BaseType_t xReturned;
@@ -104,16 +92,12 @@ void configure_user_btn(gpio_interrupt_handler_t gpio_interrupt_handler)
     xReturned = xTaskCreate(user_btn_thread, "User btn task", BTN_TASK_STACK_SIZE, NULL, 4, &btn_handle);
     if (xReturned != pdPASS) return;
 
-    /* Initialize the user btn */
-    cyhal_gpio_init(CYBSP_USER_BTN, CYHAL_GPIO_DIR_INPUT, CYHAL_GPIO_DRIVE_NONE, CYBSP_BTN_OFF);
+    /* Initialize the user button with internal pull-up (active-low button) */
+    cyhal_gpio_init(CYBSP_USER_BTN, CYHAL_GPIO_DIR_INPUT, CYHAL_GPIO_DRIVE_PULLUP, CYBSP_BTN_OFF);
 
-    /* Configure GPIO interrupt */
+    /* Configure GPIO interrupt on falling edge (button press) */
     cyhal_gpio_register_callback(CYBSP_USER_BTN, &cb_data);
     cyhal_gpio_enable_event(CYBSP_USER_BTN, CYHAL_GPIO_IRQ_FALL, GPIO_INTERRUPT_PRIORITY, true);
-
-    if (WICED_SUCCESS == wiced_init_timer(&btn_ms_timer, btn_timeout_handler, 0, WICED_MILLI_SECONDS_PERIODIC_TIMER)) {
-        wiced_start_timer(&btn_ms_timer, USER_BUTTON_TIMER_INTERVAL_MS);
-    }
 
     g_gpio_interrupt_handler_ptr = gpio_interrupt_handler;
 }

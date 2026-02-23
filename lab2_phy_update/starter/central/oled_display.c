@@ -19,6 +19,7 @@
  * Static Variables
  ******************************************************************************/
 static oled_page_t current_page = OLED_PAGE_THROUGHPUT;
+static oled_page_t drawn_page = OLED_PAGE_COUNT; /* Sentinel: forces full draw on first update */
 static uint32_t last_throughput_kbps = 0;
 
 /*******************************************************************************
@@ -79,6 +80,17 @@ void oled_display_update(void)
 }
 
 /*******************************************************************************
+ * Function Name: oled_display_force_redraw
+ *
+ * Summary:
+ *   Forces a full redraw on the next update (used after disconnect/reconnect).
+ ******************************************************************************/
+void oled_display_force_redraw(void)
+{
+    drawn_page = OLED_PAGE_COUNT;
+}
+
+/*******************************************************************************
  * Function Name: oled_display_set_throughput
  *
  * Summary:
@@ -98,6 +110,7 @@ void oled_display_set_throughput(uint32_t kbps)
 void oled_display_next_page(void)
 {
     current_page = (oled_page_t)((current_page + 1) % OLED_PAGE_COUNT);
+    drawn_page = OLED_PAGE_COUNT; /* Force full redraw on page switch */
     oled_display_update();
 }
 
@@ -117,12 +130,18 @@ static void draw_page_throughput(void)
 {
     char buf[22];
 
-    oled_clear_screen();
+    /* Draw static elements only on page switch */
+    if (drawn_page != OLED_PAGE_THROUGHPUT)
+    {
+        oled_clear_screen();
+        oled_printText(0, 0, "BLE THROUGHPUT COURSE");
+        oled_printText(1, 0, "---------------------");
+        drawn_page = OLED_PAGE_THROUGHPUT;
+    }
 
-    oled_printText(0, 0, "BLE THROUGHPUT COURSE");
-    oled_printText(1, 0, "---------------------");
-
-    /* Large throughput number + small "kbps" on same line, centered together */
+    /* Lines 2-3: Large throughput number (variable width, clear before redraw) */
+    oled_clearLine(2);
+    oled_clearLine(3);
     snprintf(buf, sizeof(buf), "%lu", (unsigned long)last_throughput_kbps);
     uint8_t num_len = strlen(buf);
     /* Total width: large digits + 2px gap + small "kbps" (4 chars * 6px) */
@@ -133,19 +152,19 @@ static void draw_page_throughput(void)
     /* "kbps" in small text on line 3 (bottom half of large text), after the number */
     oled_printText(3, x_pos + num_len * 13 + 2, "kbps");
 
-    /* Line 5: PHY and Connection Interval */
-    snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.0fms",
+    /* Line 5: PHY and Connection Interval (padded to overwrite previous content) */
+    snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.0fms  ",
              phy_to_string(conn_state.tx_phy),
              conn_state.conn_interval);
     oled_printText(5, 0, buf);
 
     /* Line 6: MTU and DLE */
-    snprintf(buf, sizeof(buf), "MTU:%-4d DLE:%-3d",
+    snprintf(buf, sizeof(buf), "MTU:%-4d DLE:%-3d ",
              conn_state.mtu, conn_state.dle_tx_bytes);
     oled_printText(6, 0, buf);
 
-    /* Line 7: RSSI */
-    snprintf(buf, sizeof(buf), "RSSI: %d dBm", conn_state.rssi);
+    /* Line 7: RSSI (padded for variable width) */
+    snprintf(buf, sizeof(buf), "RSSI: %-4d dBm  ", conn_state.rssi);
     oled_printText(7, 0, buf);
 }
 
@@ -168,27 +187,32 @@ static void draw_page_details(void)
     uint16_t payload = (conn_state.mtu > APP_ATT_HEADER_SIZE)
                      ? (conn_state.mtu - APP_ATT_HEADER_SIZE) : 0;
 
-    oled_clear_screen();
+    /* Draw static elements only on page switch */
+    if (drawn_page != OLED_PAGE_DETAILS)
+    {
+        oled_clear_screen();
+        oled_printText(0, 0, "CONNECTION DETAILS");
+        oled_printText(1, 0, "---------------------");
+        drawn_page = OLED_PAGE_DETAILS;
+    }
 
-    oled_printText(0, 0, "CONNECTION DETAILS");
-    oled_printText(1, 0, "---------------------");
-
-    snprintf(buf, sizeof(buf), "PHY:  %s", phy_to_string(conn_state.tx_phy));
+    /* All parameter lines use padded format to overwrite previous values */
+    snprintf(buf, sizeof(buf), "PHY:  %-4s", phy_to_string(conn_state.tx_phy));
     oled_printText(2, 0, buf);
 
-    snprintf(buf, sizeof(buf), "CI:   %.2f ms", conn_state.conn_interval);
+    snprintf(buf, sizeof(buf), "CI:   %-8.2f ms", conn_state.conn_interval);
     oled_printText(3, 0, buf);
 
-    snprintf(buf, sizeof(buf), "MTU:  %d bytes", conn_state.mtu);
+    snprintf(buf, sizeof(buf), "MTU:  %-3d bytes ", conn_state.mtu);
     oled_printText(4, 0, buf);
 
-    snprintf(buf, sizeof(buf), "DLE:  %d bytes", conn_state.dle_tx_bytes);
+    snprintf(buf, sizeof(buf), "DLE:  %-3d bytes ", conn_state.dle_tx_bytes);
     oled_printText(5, 0, buf);
 
-    snprintf(buf, sizeof(buf), "Payload: %d B", payload);
+    snprintf(buf, sizeof(buf), "Payload: %-3d B  ", payload);
     oled_printText(6, 0, buf);
 
-    snprintf(buf, sizeof(buf), "RSSI: %d dBm", conn_state.rssi);
+    snprintf(buf, sizeof(buf), "RSSI: %-4d dBm  ", conn_state.rssi);
     oled_printText(7, 0, buf);
 }
 
@@ -199,13 +223,17 @@ static void draw_page_details(void)
  ******************************************************************************/
 static void draw_page_idle(void)
 {
-    oled_clear_screen();
-
-    oled_printText(0, 0, "BLE Throughput Demo");
-    oled_printText(1, 0, "---------------------");
-    oled_printText(3, 18, "SCANNING...");
-    oled_printText(5, 6, "Waiting for");
-    oled_printText(6, 6, "peripheral");
+    /* Only redraw if not already showing idle screen */
+    if (drawn_page != OLED_PAGE_COUNT)
+    {
+        oled_clear_screen();
+        oled_printText(0, 0, "BLE Throughput Demo");
+        oled_printText(1, 0, "---------------------");
+        oled_printText(3, 18, "SCANNING...");
+        oled_printText(5, 6, "Waiting for");
+        oled_printText(6, 6, "peripheral");
+        drawn_page = OLED_PAGE_COUNT; /* Use OLED_PAGE_COUNT as idle sentinel */
+    }
 }
 
 /*******************************************************************************

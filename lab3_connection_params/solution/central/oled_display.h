@@ -30,4 +30,7 @@ void oled_display_set_throughput(uint32_t kbps);
 /* Cycle to the next display page (called from button handler) */
 void oled_display_next_page(void);
 
+/* Force a full redraw on the next update (e.g. after reconnect) */
+void oled_display_force_redraw(void);
+
 #endif /* OLED_DISPLAY_H */

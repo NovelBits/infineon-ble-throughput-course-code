@@ -98,6 +98,7 @@
  ******************************************************************************/
 cy_rslt_t oled_init(void);
 void oled_clear_screen(void);
+void oled_clearLine(uint8_t line);
 void oled_printText(uint8_t line, uint8_t x, char data[]);
 void oled_printLargeText(uint8_t line, uint8_t x, char data[]);
 
