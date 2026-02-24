@@ -34,7 +34,7 @@
 # PROJECT     -- Project Makefile under Application
 #
 MTB_TYPE=COMBINED
-MTB_PROBE_SERIAL=0818038900212400
+# MTB_PROBE_SERIAL=
 
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
