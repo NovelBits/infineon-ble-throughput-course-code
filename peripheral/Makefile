@@ -12,13 +12,13 @@
 ################################################################################
 
 MTB_TYPE=COMBINED
-MTB_PROBE_SERIAL=0A1803E8021D2400
+# MTB_PROBE_SERIAL=
 
 # Target board/hardware (BSP).
 TARGET=CYW920829M2EVK-02
 
 # Name of application (used to derive name of final linked file).
-APPNAME=lab1-peripheral
+APPNAME=throughput-peripheral
 
 # Toolchain to use.
 TOOLCHAIN=GCC_ARM
@@ -83,7 +83,7 @@ POSTBUILD=
 CY_APP_PATH=
 
 # Relative path to the shared repo location.
-CY_GETLIBS_SHARED_PATH=../../
+CY_GETLIBS_SHARED_PATH=../
 
 # Directory name of the shared repo location.
 CY_GETLIBS_SHARED_NAME=mtb_shared

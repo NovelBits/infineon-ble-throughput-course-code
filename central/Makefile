@@ -34,7 +34,7 @@
 # PROJECT     -- Project Makefile under Application
 #
 MTB_TYPE=COMBINED
-MTB_PROBE_SERIAL=0818038900212400
+# MTB_PROBE_SERIAL=
 
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
@@ -46,7 +46,7 @@ TARGET=CYW920829M2EVK-02
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=lab1-central
+APPNAME=throughput-central
 
 # Name of toolchain to use. Options include:
 #
@@ -117,7 +117,7 @@ SOURCES=
 
 # Like SOURCES, but for include directories. Value should be paths to
 # directories (without a leading -I).
-INCLUDES=./configs ./bonding
+INCLUDES=./configs
 
 # Add additional defines to the build process (without a leading -D).
 DEFINES+=CY_RETARGET_IO_CONVERT_LF_TO_CRLF CY_RTOS_AWARE STACK_INSIDE_FREE_RTOS
@@ -176,7 +176,7 @@ CY_APP_PATH=
 # the CY_GETLIBS_SHARED_PATH variable. The default location is one directory level
 # above the current app directory.
 # This is used with CY_GETLIBS_SHARED_NAME variable, which specifies the directory name.
-CY_GETLIBS_SHARED_PATH=../../
+CY_GETLIBS_SHARED_PATH=../
 
 # Directory name of the shared repo location.
 #

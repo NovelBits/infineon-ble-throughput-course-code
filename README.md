@@ -2,7 +2,23 @@
 
 Course code for the **Bluetooth LE Data Throughput** course using Infineon CYW920829M2EVK-02 evaluation kits.
 
-Each lab folder contains complete ModusToolbox projects that you can import directly into the IDE. Labs with a `starter/` and `solution/` split have TODO comments in the starter code to guide you through the exercise.
+The repository contains a single central and peripheral project. You work through the labs by editing `app_config.h` in each project — enabling feature flags and adjusting parameters as directed by the course. Reference configurations for each lab are provided in `configs/`.
+
+## Repository Structure
+
+```
+infineon-ble-throughput-course-code/
+├── central/            # Central (initiator) — ModusToolbox project
+├── peripheral/         # Peripheral (advertiser) — ModusToolbox project
+├── configs/            # Reference app_config.h for each lab
+│   ├── lab1-central.h
+│   ├── lab1-peripheral.h
+│   ├── lab2-central.h
+│   ├── lab2-peripheral.h
+│   ├── lab3-central.h
+│   └── lab3-peripheral.h
+└── mtb_shared/         # Shared ModusToolbox libraries
+```
 
 ## Hardware Required
 
@@ -18,67 +34,51 @@ Each lab folder contains complete ModusToolbox projects that you can import dire
 git clone https://github.com/NovelBits/infineon-ble-throughput-course-code.git
 ```
 
-### 2. Import a lab into ModusToolbox
+### 2. Import projects into ModusToolbox
 
 1. Open **Eclipse IDE for ModusToolbox**
 2. Click **Import Existing Application In-Place** from the Quick Panel
-3. Browse to the lab folder you want to work on (e.g., `lab1_baseline/central/`)
-4. The IDE will run `make getlibs` to fetch library dependencies (requires internet). The Board Support Package (BSP) is already included in the repository under `bsps/`.
+3. Browse to `central/` and import the project
+4. Repeat for `peripheral/`
+5. The IDE will run `make getlibs` to fetch library dependencies (requires internet). The Board Support Package (BSP) is already included in the repository under `bsps/`.
 
-### 3. Build and flash
+### 3. Set probe serial numbers
+
+Each project's Makefile has a commented-out placeholder:
+
+```makefile
+# MTB_PROBE_SERIAL=
+```
+
+Uncomment and add your probe serial for each board so the IDE flashes the correct board. See the course instructions (Lesson 1.3) for how to find your probe serials.
+
+### 4. Build and flash
 
 1. Select the project in the Project Explorer
 2. Click **Build** (hammer icon)
 3. Connect the target board via micro-USB
 4. Click **Program** (green play icon with chip)
 
-## Lab Map
+## Lab Workflow
 
-| Lab | Folder | Description | What You Do |
-|-----|--------|-------------|-------------|
-| **Lab 1** | `lab1_baseline/` | Baseline measurement | Import, build, flash, verify connection. All feature flags OFF. |
-| **Lab 2** | `lab2_phy_update/` | Switch to 2M PHY | **Starter:** Enable PHY flag and select 2M PHY in `app_config.h` (2 TODOs per board). **Solution:** Working 2M PHY configuration. |
-| **Lab 3** | `lab3_connection_params/` | Optimize CI and DLE | **Starter:** Enable connection parameter update, set CI to 7.5 ms, increase DLE to 251 bytes in `app_config.h` (4 TODOs per board). **Solution:** Working CI + DLE configuration. |
+Instead of switching between separate project folders, you work with the **same two projects** throughout the course. Each lab directs you to edit `app_config.h` — enabling feature flags and adjusting parameter values.
 
-## Lab Structure
+| Lab | What You Change in `app_config.h` | Reference Config |
+|-----|-----------------------------------|-----------------|
+| **Lab 1** | Nothing — baseline with all flags OFF | `configs/lab1-*.h` |
+| **Lab 2** | Enable `APP_ENABLE_PHY_UPDATE`, select 2M PHY | `configs/lab2-*.h` |
+| **Lab 3** | Enable `APP_ENABLE_CONN_PARAM_UPDATE`, set CI = 7.5 ms, DLE = 251 | `configs/lab3-*.h` |
 
-### lab1_baseline/
+### Using Reference Configs
 
-No starter/solution split — this is the unmodified baseline. Both projects build and run with all feature flags disabled (1M PHY, 27-byte DLE, default MTU).
+If you get stuck or want to reset to a known-good state for a lab, copy the matching reference config:
 
-```
-lab1_baseline/
-├── central/          # Central (initiator) — imports as a ModusToolbox project
-└── peripheral/       # Peripheral (advertiser) — imports as a ModusToolbox project
-```
-
-### lab2_phy_update/
-
-Students enable the PHY update feature flag and select the 2M PHY in `app_config.h`. Configuration changes only — no code modifications needed.
-
-```
-lab2_phy_update/
-├── starter/
-│   ├── central/      # TODO comments in app_config.h
-│   └── peripheral/   # TODO comments in app_config.h
-└── solution/
-    ├── central/      # PHY_UPDATE=1, PHY=2M
-    └── peripheral/   # PHY_UPDATE=1, PHY=2M
+```bash
+cp configs/lab2-central.h central/app_config.h
+cp configs/lab2-peripheral.h peripheral/app_config.h
 ```
 
-### lab3_connection_params/
-
-Students enable the connection parameter update feature flag, reduce the connection interval to 7.5 ms, and increase DLE to 251 bytes in `app_config.h`. Configuration changes only — no code modifications needed.
-
-```
-lab3_connection_params/
-├── starter/
-│   ├── central/      # TODO comments in app_config.h
-│   └── peripheral/   # TODO comments in app_config.h
-└── solution/
-    ├── central/      # CONN_PARAM_UPDATE=1, CI=7.5ms, DLE=251
-    └── peripheral/   # CONN_PARAM_UPDATE=1, CI=7.5ms, DLE=251
-```
+Then rebuild and reflash both boards.
 
 ## Configuration File
 
@@ -93,4 +93,3 @@ The student-facing configuration is centralized in `app_config.h` in each projec
 
 - [ModusToolbox 3.x](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/)
 - GCC ARM toolchain (included with ModusToolbox)
-

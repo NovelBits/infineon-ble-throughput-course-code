@@ -2,7 +2,7 @@
  * File Name: throughput_server.c
  *
  * Description: Bluetooth LE Throughput Peripheral GATT server implementation.
- *              Adapted from Infineon's BLE Throughput Server example.
+ *              Adapted from Infineon's Bluetooth LE Throughput Server example.
  *              - NO LED PWM (simplified for course)
  *              - NO bonding/pairing
  *              - PHY and connection parameters driven by app_config.h
@@ -54,7 +54,7 @@ uint8_t value_initialize = 243;
 /* Variable to store connection state information */
 static conn_state_info_t conn_state_info;
 
-/* Variable to store BLE advertising state */
+/* Variable to store Bluetooth LE advertising state */
 static app_bt_adv_conn_mode_t app_bt_adv_conn_state = APP_BT_ADV_OFF_CONN_OFF;
 
 /* For 1 sec and 1 millisecond timer */
