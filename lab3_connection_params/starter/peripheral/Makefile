@@ -17,7 +17,7 @@ MTB_TYPE=COMBINED
 TARGET=CYW920829M2EVK-02
 
 # Name of application (used to derive name of final linked file).
-APPNAME=ble-throughput-peripheral
+APPNAME=lab3-starter-peripheral
 
 # Toolchain to use.
 TOOLCHAIN=GCC_ARM

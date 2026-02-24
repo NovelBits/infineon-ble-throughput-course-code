@@ -45,7 +45,7 @@ TARGET=CYW920829M2EVK-02
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=mtb-example-btstack-freertos-le-lr-central
+APPNAME=lab3-starter-central
 
 # Name of toolchain to use. Options include:
 #

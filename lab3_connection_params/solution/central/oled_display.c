@@ -19,7 +19,7 @@
  * Static Variables
  ******************************************************************************/
 static oled_page_t current_page = OLED_PAGE_THROUGHPUT;
-static oled_page_t drawn_page = OLED_PAGE_COUNT; /* Sentinel: forces full draw on first update */
+static oled_page_t drawn_page = OLED_PAGE_NONE; /* Sentinel: forces full draw on first update */
 static uint32_t last_throughput_kbps = 0;
 
 /*******************************************************************************
@@ -87,7 +87,7 @@ void oled_display_update(void)
  ******************************************************************************/
 void oled_display_force_redraw(void)
 {
-    drawn_page = OLED_PAGE_COUNT;
+    drawn_page = OLED_PAGE_NONE;
 }
 
 /*******************************************************************************
@@ -110,7 +110,7 @@ void oled_display_set_throughput(uint32_t kbps)
 void oled_display_next_page(void)
 {
     current_page = (oled_page_t)((current_page + 1) % OLED_PAGE_COUNT);
-    drawn_page = OLED_PAGE_COUNT; /* Force full redraw on page switch */
+    drawn_page = OLED_PAGE_NONE; /* Force full redraw on page switch */
     oled_display_update();
 }
 

@@ -12,12 +12,13 @@
 ################################################################################
 
 MTB_TYPE=COMBINED
+MTB_PROBE_SERIAL=0A1803E8021D2400
 
 # Target board/hardware (BSP).
 TARGET=CYW920829M2EVK-02
 
 # Name of application (used to derive name of final linked file).
-APPNAME=ble-throughput-peripheral
+APPNAME=lab2-solution-peripheral
 
 # Toolchain to use.
 TOOLCHAIN=GCC_ARM

@@ -13,6 +13,7 @@
 
 /* Display pages */
 typedef enum {
+    OLED_PAGE_NONE = -1,           /* Nothing drawn yet (forces first draw) */
     OLED_PAGE_THROUGHPUT = 0,   /* Main throughput view with large kbps */
     OLED_PAGE_DETAILS,          /* Detailed connection parameters */
     OLED_PAGE_COUNT

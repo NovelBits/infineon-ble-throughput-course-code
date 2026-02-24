@@ -34,6 +34,7 @@
 # PROJECT     -- Project Makefile under Application
 #
 MTB_TYPE=COMBINED
+MTB_PROBE_SERIAL=0818038900212400
 
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
@@ -45,7 +46,7 @@ TARGET=CYW920829M2EVK-02
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=mtb-example-btstack-freertos-le-lr-central
+APPNAME=lab2-solution-central
 
 # Name of toolchain to use. Options include:
 #
