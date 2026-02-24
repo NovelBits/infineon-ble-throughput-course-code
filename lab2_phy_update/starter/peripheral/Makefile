@@ -12,6 +12,7 @@
 ################################################################################
 
 MTB_TYPE=COMBINED
+MTB_PROBE_SERIAL=0A1803E8021D2400
 
 # Target board/hardware (BSP).
 TARGET=CYW920829M2EVK-02

@@ -41,8 +41,6 @@
 static unsigned long gatt_notif_tx_bytes = 0u;
 static unsigned long gatt_write_rx_bytes = 0u;
 
-/* Variable to store connection parameter status */
-wiced_bool_t conn_param_status = FALSE;
 
 /* Data buffers sent as GATT notifications (alternating) */
 uint8_t notification_data_seq1[NOTIFICATION_DATA_SIZE];
@@ -145,14 +143,6 @@ wiced_result_t app_bt_management_callback(wiced_bt_management_evt_t event,
     wiced_result_t status = WICED_BT_SUCCESS;
     wiced_bt_device_address_t bda = {0};
 
-    wiced_bt_ble_pref_conn_params_t conn_param_t = {
-        .conn_interval_min        = APP_CONN_INTERVAL_MIN,
-        .conn_interval_max        = APP_CONN_INTERVAL_MAX + 1,
-        .conn_latency             = APP_CONN_LATENCY,
-        .conn_supervision_timeout = APP_SUPERVISION_TIMEOUT,
-        .min_ce_length            = 0,
-        .max_ce_length            = 0,
-    };
 
     switch (event)
     {
@@ -209,21 +199,8 @@ wiced_result_t app_bt_management_callback(wiced_bt_management_evt_t event,
                                 conn_state_info.rx_phy, conn_state_info.tx_phy);
         print_bd_address(conn_state_info.remote_addr);
 #endif
-#if APP_ENABLE_CONN_PARAM_UPDATE
-        /* Send connection interval update after PHY is updated */
-        conn_param_status = wiced_bt_l2cap_update_ble_conn_params(
-                                conn_state_info.remote_addr, &conn_param_t);
-#if APP_DEBUG_ENABLED
-        if (TRUE == conn_param_status)
-        {
-            printf("Connection Interval update started\n");
-        }
-        else
-        {
-            printf("Failed to send connection interval update\n");
-        }
-#endif
-#endif /* APP_ENABLE_CONN_PARAM_UPDATE */
+        /* Connection parameter updates are driven by the central to avoid
+         * L2CAP parameter request collisions. */
         break;
 
     case BTM_BLE_CONNECTION_PARAM_UPDATE:
@@ -645,31 +622,9 @@ static wiced_bt_gatt_status_t ble_app_connect_callback(
             /* Update the adv/conn state */
             app_bt_adv_conn_state = APP_BT_ADV_OFF_CONN_ON;
 
-#if APP_ENABLE_PHY_UPDATE
-            /* Request PHY update based on app_config.h setting */
-            wiced_bt_ble_phy_preferences_t phy_preferences;
-#if (APP_SELECTED_PHY == APP_PHY_2M)
-            phy_preferences.rx_phys = BTM_BLE_PREFER_2M_PHY;
-            phy_preferences.tx_phys = BTM_BLE_PREFER_2M_PHY;
-#else
-            phy_preferences.rx_phys = BTM_BLE_PREFER_1M_PHY;
-            phy_preferences.tx_phys = BTM_BLE_PREFER_1M_PHY;
-#endif
-            memcpy(phy_preferences.remote_bd_addr, conn_state_info.remote_addr,
-                                                                BD_ADDR_LEN);
-            result = wiced_bt_ble_set_phy(&phy_preferences);
-#if APP_DEBUG_ENABLED
-            if (result == WICED_BT_SUCCESS)
-            {
-                printf("Request sent to switch PHY to %dM\n",
-                                    phy_preferences.tx_phys);
-            }
-            else
-            {
-                printf("PHY switch request failed, result: %d\n", result);
-            }
-#endif
-#endif /* APP_ENABLE_PHY_UPDATE */
+            /* PHY update is driven by the central — peripheral accepts the
+             * request but does not initiate its own LL_PHY_REQ to avoid
+             * collisions at the Link Layer. */
 
             /* Start the throughput calculation timer */
             if (CY_RSLT_SUCCESS != cyhal_timer_start(&get_throughput_timer_obj))
@@ -842,16 +797,27 @@ void app_millisec_timer_callb(void *callback_arg, cyhal_timer_event_t event)
  * Function Name: send_notification_task()
  *
  * Summary:
- *   Sends GATT notifications when triggered by the 1ms timer.
+ *   Sends GATT notifications as fast as the stack allows. Uses GATT
+ *   congestion as natural flow control — sends in a tight loop until the
+ *   stack reports congestion, then waits for the congestion-clear callback
+ *   before resuming. This maximizes throughput for the current PHY and
+ *   connection parameters.
  ******************************************************************************/
 void send_notification_task(void *pvParam)
 {
+    /* Wait for the first timer tick (notifications enabled) */
+    ulTaskNotifyTakeIndexed(TASK_NOTIFY_1MS_TIMER, pdTRUE, portMAX_DELAY);
+
     while (true)
     {
-        ulTaskNotifyTakeIndexed(TASK_NOTIFY_1MS_TIMER, pdTRUE, portMAX_DELAY);
         if (app_throughput_measurement_notify_client_char_config[0])
         {
             tput_send_notification();
+        }
+        else
+        {
+            /* Notifications disabled — wait for re-enable */
+            ulTaskNotifyTakeIndexed(TASK_NOTIFY_1MS_TIMER, pdTRUE, portMAX_DELAY);
         }
     }
 }
@@ -860,7 +826,8 @@ void send_notification_task(void *pvParam)
  * Function Name: tput_send_notification()
  *
  * Summary:
- *   Sends a GATT notification using alternating data buffers.
+ *   Sends a GATT notification using alternating data buffers. If the stack
+ *   reports congestion, blocks until the congestion clears before returning.
  ******************************************************************************/
 static void tput_send_notification(void)
 {
