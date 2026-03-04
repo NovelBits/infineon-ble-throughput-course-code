@@ -67,7 +67,7 @@ Instead of switching between separate project folders, you work with the **same 
 |-----|-----------------------------------|-----------------|
 | **Lab 1** | Nothing — baseline with all flags OFF | `configs/lab1-*.h` |
 | **Lab 2** | Enable `APP_ENABLE_PHY_UPDATE`, select 2M PHY | `configs/lab2-*.h` |
-| **Lab 3** | Enable `APP_ENABLE_CONN_PARAM_UPDATE`, set CI = 7.5 ms, DLE = 251 | `configs/lab3-*.h` |
+| **Lab 3** | Enable `APP_ENABLE_CI_OPTIMIZATION`, set CI = 7.5 ms, DLE = 251 | `configs/lab3-*.h` |
 
 ### Using Reference Configs
 
@@ -84,7 +84,7 @@ Then rebuild and reflash both boards.
 
 The student-facing configuration is centralized in `app_config.h` in each project. This file contains:
 
-- **Feature flags** — enable/disable protocol features (`APP_ENABLE_PHY_UPDATE`, `APP_ENABLE_CONN_PARAM_UPDATE`, `APP_ENABLE_MTU_EXCHANGE`)
+- **Feature flags** — enable/disable protocol features (`APP_ENABLE_PHY_UPDATE`, `APP_ENABLE_CI_OPTIMIZATION`, `APP_ENABLE_MTU_EXCHANGE`)
 - **PHY selection** — choose between 1M and 2M PHY
 - **Link layer parameters** — connection interval, DLE
 - **GATT parameters** — MTU size

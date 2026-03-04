@@ -195,12 +195,12 @@ wiced_bt_dev_status_t app_bt_management_callback(wiced_bt_management_evt_t event
         conn_state.tx_phy = p_event_data->ble_phy_update_event.tx_phy;
         printf("PHY updated: TX=%dM, RX=%dM\r\n", conn_state.tx_phy, conn_state.rx_phy);
 
-#if APP_ENABLE_CONN_PARAM_UPDATE
+#if APP_ENABLE_CI_OPTIMIZATION
         /* After PHY update, request connection parameter update */
         {
             wiced_bt_ble_pref_conn_params_t conn_params = {
-                .conn_interval_min = APP_CONN_INTERVAL_MIN,
-                .conn_interval_max = APP_CONN_INTERVAL_MAX,
+                .conn_interval_min = APP_CI_TARGET_MIN,
+                .conn_interval_max = APP_CI_TARGET_MAX,
                 .conn_latency = APP_CONN_LATENCY,
                 .conn_supervision_timeout = APP_SUPERVISION_TIMEOUT,
                 .min_ce_length = 0,
@@ -370,7 +370,7 @@ static wiced_bt_gatt_status_t app_gatt_event_handler(wiced_bt_gatt_evt_t event,
             conn_state.tx_phy = 1; /* All connections start on 1M PHY */
             conn_state.rx_phy = 1;
             conn_state.dle_tx_bytes = 27; /* Default LE Data Length */
-            conn_state.conn_interval = 50.0; /* Default: max configured CI (40 * 1.25 ms) */
+            conn_state.conn_interval = 30.0; /* Default CI (24 * 1.25 ms) */
 
             printf("Connected! conn_id=%d, peer: ", conn_state.conn_id);
             print_bd_address(conn_state.remote_addr);
@@ -872,13 +872,15 @@ void throughput_calc_task(void *pvParam)
 
         if (conn_state.connected)
         {
-            /* Calculate throughput */
+            /* Calculate throughput (instantaneous + running average) */
             uint32_t kbps = throughput_measure_get_kbps();
+            uint32_t avg_kbps = throughput_measure_get_avg_kbps();
 
             if (kbps > 0)
             {
-                printf("Throughput: %lu kbps | PHY: %s | CI: %.2fms | MTU: %d | DLE: %d | RSSI: %d dBm\r\n",
+                printf("Throughput: %lu kbps (avg: %lu) | PHY: %s | CI: %.2fms | MTU: %d | DLE: %d | RSSI: %d dBm\r\n",
                        (unsigned long)kbps,
+                       (unsigned long)avg_kbps,
                        phy_to_string(conn_state.tx_phy),
                        conn_state.conn_interval,
                        conn_state.mtu,

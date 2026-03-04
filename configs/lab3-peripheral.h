@@ -25,8 +25,8 @@
 /* Lab 2: Set to 1 to enable PHY update request after connection */
 #define APP_ENABLE_PHY_UPDATE           (1)
 
-/* Lab 3: Set to 1 to enable connection parameter update after PHY update */
-#define APP_ENABLE_CONN_PARAM_UPDATE    (1)
+/* Lab 3: Set to 1 to enable CI optimization after PHY update */
+#define APP_ENABLE_CI_OPTIMIZATION      (1)
 
 /* Lab 4: Set to 1 to enable MTU exchange (uses APP_MTU_SIZE value) */
 #define APP_ENABLE_MTU_EXCHANGE         (0)
@@ -46,10 +46,14 @@
  * Connection interval in units of 1.25ms (e.g., 24 = 30ms, 6 = 7.5ms)
  * DLE: Data Length Extension max TX bytes (27-251)
  * ============================================================================ */
-#define APP_CONN_INTERVAL_MIN       (6)     /* 7.5 ms */
-#define APP_CONN_INTERVAL_MAX       (6)     /* 7.5 ms */
+#define APP_CONN_INTERVAL_MIN       (24)    /* 30.0 ms */
+#define APP_CONN_INTERVAL_MAX       (24)    /* 30.0 ms */
 #define APP_CONN_LATENCY            (0)
 #define APP_SUPERVISION_TIMEOUT     (1000)  /* 10 seconds (in 10ms units) */
+
+/* Lab 3: Target connection interval when CI optimization is enabled */
+#define APP_CI_TARGET_MIN           (6)     /* 7.5 ms */
+#define APP_CI_TARGET_MAX           (6)     /* 7.5 ms */
 
 #define APP_DLE_MAX_TX_BYTES        (251)   /* Maximum DLE */
 #define APP_DLE_MAX_TX_TIME         (0x848) /* Max TX time for 251 bytes at 1M */

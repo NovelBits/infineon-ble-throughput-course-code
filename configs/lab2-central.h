@@ -26,8 +26,8 @@
 /* Lab 2: Set to 1 to enable PHY update request after connection */
 #define APP_ENABLE_PHY_UPDATE           (1)
 
-/* Lab 3: Set to 1 to enable connection parameter update after PHY update */
-#define APP_ENABLE_CONN_PARAM_UPDATE    (0)
+/* Lab 3: Set to 1 to enable CI optimization after PHY update */
+#define APP_ENABLE_CI_OPTIMIZATION      (0)
 
 /* Lab 4: Set to 1 to enable MTU exchange (uses APP_MTU_SIZE value) */
 #define APP_ENABLE_MTU_EXCHANGE         (0)
@@ -47,6 +47,10 @@
 #define APP_CONN_INTERVAL_MAX       (24)    /* 30.0 ms */
 #define APP_CONN_LATENCY            (0)
 #define APP_SUPERVISION_TIMEOUT     (1000)
+
+/* Lab 3: Target connection interval when CI optimization is enabled */
+#define APP_CI_TARGET_MIN           (6)     /* 7.5 ms */
+#define APP_CI_TARGET_MAX           (6)     /* 7.5 ms */
 
 #define APP_DLE_MAX_TX_BYTES        (27)
 #define APP_DLE_MAX_TX_TIME         (0x848)
