@@ -69,6 +69,7 @@
  * Lab 6: Measurement Parameters
  * ============================================================================ */
 #define APP_THROUGHPUT_CALC_INTERVAL_MS  (1000)
+#define APP_THROUGHPUT_AVG_SAMPLES      (10)
 
 /* ============================================================================
  * Notification data size constants

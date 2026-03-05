@@ -10,20 +10,20 @@
 SEARCH_TARGET_CYW920829M2EVK-02=bsps/TARGET_CYW920829M2EVK-02
 
 # The search paths for the included middleware
-SEARCH_btstack-integration=../../mtb_shared/btstack-integration/latest-v7.X
-SEARCH_display-oled-ssd1306=../../mtb_shared/display-oled-ssd1306/release-v1.0.0
-SEARCH_retarget-io=../../mtb_shared/retarget-io/latest-v1.X
-SEARCH_abstraction-rtos=../../mtb_shared/abstraction-rtos/release-v1.12.0
-SEARCH_btstack=../../mtb_shared/btstack/release-v5.0.4
-SEARCH_clib-support=../../mtb_shared/clib-support/release-v1.8.0
-SEARCH_cmsis=../../mtb_shared/cmsis/release-v5.8.2
-SEARCH_core-lib=../../mtb_shared/core-lib/release-v1.6.0
-SEARCH_core-make=../../mtb_shared/core-make/release-v3.8.0
-SEARCH_freertos=../../mtb_shared/freertos/release-v10.6.202
-SEARCH_fw-cyw20829b0=../../mtb_shared/fw-cyw20829b0/release-v1.0.0
-SEARCH_mtb-hal-cat1=../../mtb_shared/mtb-hal-cat1/release-v2.7.4
-SEARCH_mtb-pdl-cat1=../../mtb_shared/mtb-pdl-cat1/release-v3.19.0
-SEARCH_recipe-make-cat1b=../../mtb_shared/recipe-make-cat1b/release-v2.8.2
+SEARCH_btstack-integration=../mtb_shared/btstack-integration/latest-v7.X
+SEARCH_display-oled-ssd1306=../mtb_shared/display-oled-ssd1306/release-v1.0.0
+SEARCH_retarget-io=../mtb_shared/retarget-io/latest-v1.X
+SEARCH_abstraction-rtos=../mtb_shared/abstraction-rtos/release-v1.12.0
+SEARCH_btstack=../mtb_shared/btstack/release-v5.0.4
+SEARCH_clib-support=../mtb_shared/clib-support/release-v1.8.0
+SEARCH_cmsis=../mtb_shared/cmsis/release-v5.8.2
+SEARCH_core-lib=../mtb_shared/core-lib/release-v1.6.0
+SEARCH_core-make=../mtb_shared/core-make/release-v3.8.0
+SEARCH_freertos=../mtb_shared/freertos/release-v10.6.202
+SEARCH_fw-cyw20829b0=../mtb_shared/fw-cyw20829b0/release-v1.0.0
+SEARCH_mtb-hal-cat1=../mtb_shared/mtb-hal-cat1/release-v2.7.4
+SEARCH_mtb-pdl-cat1=../mtb_shared/mtb-pdl-cat1/release-v3.19.0
+SEARCH_recipe-make-cat1b=../mtb_shared/recipe-make-cat1b/release-v2.8.2
 
 # Search libraries added to build
 SEARCH_MTB_MK+=$(SEARCH_btstack-integration)

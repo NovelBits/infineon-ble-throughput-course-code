@@ -153,7 +153,7 @@ static void draw_page_throughput(void)
     oled_printText(3, x_pos + num_len * 13 + 2, "kbps");
 
     /* Line 5: PHY and Connection Interval (padded to overwrite previous content) */
-    snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.0fms  ",
+    snprintf(buf, sizeof(buf), "PHY:%-3s CI:%.1fms  ",
              phy_to_string(conn_state.tx_phy),
              conn_state.conn_interval);
     oled_printText(5, 0, buf);
