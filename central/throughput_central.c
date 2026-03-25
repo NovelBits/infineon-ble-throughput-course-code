@@ -209,10 +209,13 @@ wiced_bt_dev_status_t app_bt_management_callback(wiced_bt_management_evt_t event
             wiced_bt_l2cap_update_ble_conn_params(conn_state.remote_addr, &conn_params);
         }
 
-        /* After CI update request, request DLE update */
-        wiced_bt_ble_set_data_packet_length(conn_state.remote_addr,
-                                             APP_DLE_MAX_TX_BYTES,
-                                             APP_DLE_MAX_TX_TIME);
+        /* Only request DLE update if configured above default */
+        if (APP_DLE_MAX_TX_BYTES > 27)
+        {
+            wiced_bt_ble_set_data_packet_length(conn_state.remote_addr,
+                                                 APP_DLE_MAX_TX_BYTES,
+                                                 APP_DLE_MAX_TX_TIME);
+        }
 #endif
 
 #if !APP_ENABLE_MTU_EXCHANGE
